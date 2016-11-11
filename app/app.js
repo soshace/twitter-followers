@@ -5,34 +5,65 @@ var express = require('express'),
 
 mongoose.connect('mongodb://localhost/twitter-followers');
 
-app.get('/', function (request, response) {
-  console.log('123123123');
-  response.send('hello world');
+app.get('/unfollow/:useId', function (request, response) {
+  var userId = request.params.useId;
 
-  chris.dudify(function (error, name) {
-    console.log('Your new name is ' + name);
-
+  User.find({id: userId}).exec(function (error, user) {
     if (error) {
-      throw 'Error' + error;
+      return response.send({
+        status: 'error',
+        error: error
+      });
     }
 
-    console.log('Your new name is ' + name);
+    if (user) {
+      user.unfollowed = new Date();
+
+      user.save(function (error, updatedUser) {
+        if (error) {
+          return response.send({
+            status: 'error',
+            error: error
+          });
+        }
+
+        response.send({
+          status: 'success',
+          user: updatedUser
+        });
+      });
+    }
   });
 });
 
 
-// create a new user called chris
-var chris = new User({
-  name: 'Chris',
-  username: 'sevilayha',
-  password: 'password'
+app.get('/follow/:useId', function (request, response) {
+  var userId = request.params.useId;
+
+  User.find({id: userId}).exec(function (error, user) {
+    if (error) {
+      return console.log(error);
+    }
+
+    if (user) {
+      return response.send({
+        status: 'followed'
+      });
+    }
+
+
+    user.save(function (error, updatedUser) {
+      if (error) {
+        return console.log(error);
+      }
+
+      response.send({
+        error: false,
+        user: updatedUser
+      });
+    });
+  });
 });
 
-// call the built-in save method to save to the database
-chris.save(function (err) {
-  if (err) throw err;
-
-  console.log('User saved successfully!');
-});
 
 app.listen(3000);
