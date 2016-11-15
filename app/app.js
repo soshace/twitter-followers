@@ -1,6 +1,7 @@
 var express = require('express'),
   User = require('./models/User'),
   app = express(),
+  _ = require('underscore'),
   mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/twitter-followers');
@@ -13,6 +14,13 @@ app.get('/unfollow/:useId', function (request, response) {
       return response.send({
         status: 'error',
         error: error
+      });
+    }
+
+    if (_.isEmpty(user)) {
+      return response.send({
+        status: 'empty',
+        user: null
       });
     }
 
