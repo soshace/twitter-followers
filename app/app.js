@@ -50,7 +50,10 @@ app.get('/follow/:useId', function (request, response) {
 
   User.find({id: userId}).exec(function (error, user) {
     if (error) {
-      return console.log(error);
+      return response.send({
+        status: 'error',
+        error: error
+      });
     }
 
     if (user) {
@@ -62,7 +65,10 @@ app.get('/follow/:useId', function (request, response) {
 
     user.save(function (error, updatedUser) {
       if (error) {
-        return console.log(error);
+        return response.send({
+          status: 'error',
+          error: error
+        });
       }
 
       response.send({
