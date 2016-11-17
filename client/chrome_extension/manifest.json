@@ -16,5 +16,43 @@
     "permissions": [
         "activeTab",
         "https://ajax.googleapis.com/"
+    ],
+    "permissions": [
+        "storage",
+        "http://*/*",
+        "https://*/*",
+        "contextMenus",
+        "notifications",
+        "tabs"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "exclude_matches": [
+            ],
+            "css": [
+
+            ],
+            "js": [
+
+            ],
+            "run_at": "document_end",
+            "all_frames": false
+        },
+        {
+            "matches": [
+                "*://*.twitter.com/*"
+            ],
+            "js": [
+
+            ],
+            "css": [
+
+            ],
+            "run_at": "document_end"
+        }
     ]
 }
