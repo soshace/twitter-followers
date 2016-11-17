@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+
+    "name": "Twitter famous account",
+    "description": "This extension makes your twitter page more popular",
+    "version": "0.0",
+    "icons": {
+        "16": "images/twitter-16.png",
+        "128": "images/twitter-128.png",
+        "256": "images/twitter-256.png"
+    },
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    "permissions": [
+        "activeTab",
+        "https://ajax.googleapis.com/"
+    ]
+}
