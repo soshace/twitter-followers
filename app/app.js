@@ -23,6 +23,9 @@ app.get('/unfollow/:twitterId', function (request, response) {
       });
     }
 
+    //if()
+
+
     if (user) {
       if (user.unfollowed) {
         return response.send({

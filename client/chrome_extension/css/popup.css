@@ -1,0 +1,9 @@
+.follow-btn {
+    margin-bottom: 10px;
+    width: 200px;
+    text-align: center;
+}
+
+.follow-btn:last-child {
+    margin-bottom: 0;
+}
