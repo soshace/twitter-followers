@@ -28,26 +28,11 @@
     "content_scripts": [
         {
             "matches": [
-                "http://*/*",
-                "https://*/*"
-            ],
-            "exclude_matches": [
-            ],
-            "css": [
-
-            ],
-            "js": [
-
-            ],
-            "run_at": "document_end",
-            "all_frames": false
-        },
-        {
-            "matches": [
                 "*://*.twitter.com/*"
             ],
             "js": [
-
+                "js/jquery.js",
+                "js/app.js"
             ],
             "css": [
 
