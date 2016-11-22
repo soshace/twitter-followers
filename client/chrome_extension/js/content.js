@@ -5,22 +5,40 @@ $(function () {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  function getFollower(i) {
+  function follow(i) {
     i++;
     setTimeout(function () {
-      $('.following .js-follow-btn').get(0).click();
-      if (i == 900) return;
-      getFollower(i);
+      var newFollower = $('.not-following').get(0),
+        newFollowerData = $(newFollower).data(),
+        newFollowerBtn = $('.js-follow-btn', newFollower),
+        newFollowerId = newFollowerData.userId;
+
+      console.log('Not following user id is ' + newFollowerData + ' ----- ' + newFollowerId);
+      scrollPage();
+      if (i == 900) {
+        return;
+      }
+      follow(i);
     }, getRandomInt(1000, 10000));
   }
 
-  function scrollToBottom(i) {
+  function unFollow(i) {
     i++;
     setTimeout(function () {
-      window.scrollTo(0, document.body.scrollHeight);
-      if (i == 100) return;
-      scrollToBottom(i);
+      console.log('UnFollow process was started!');
+      //$('.following .js-follow-btn').get(0).click();
+      //scrollPage();
+      if (i == 900) {
+        return;
+      }
+      follow(i);
     }, getRandomInt(1000, 10000));
+  }
+
+  function scrollPage() {
+    if ($(window).scrollTop() + $(window).height() !== $(document).height()) {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
   }
 
   chrome.runtime.onMessage.addListener(
@@ -29,7 +47,13 @@ $(function () {
       "from a content script:" + sender.tab.url :
         "from the extension");
 
-      if (request.greeting == "hello") {
+      if (request.follow) {
+        follow();
+        sendResponse({farewell: "goodbye"});
+      }
+
+      if (request.unfollow) {
+        unFollow();
         sendResponse({farewell: "goodbye"});
       }
 
