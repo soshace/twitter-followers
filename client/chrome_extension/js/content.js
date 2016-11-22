@@ -1,20 +1,11 @@
 $(function () {
   console.log('Content of chrome extension was started!');
-  function startExtension() {
-    console.log('Starting Extension');
-  }
-
-  function stopExtension() {
-    console.log('Stopping Extension');
-  }
-
-  function onRequest(request, sender, sendResponse) {
-    if (request.action == 'start')
-      startExtension();
-    else if (request.action == 'stop')
-      stopExtension();
-    sendResponse({});
-  }
-
-  chrome.extension.onRequest.addListener(onRequest);
+  chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+      console.log(sender.tab ?
+      "from a content script:" + sender.tab.url :
+        "from the extension");
+      if (request.greeting == "hello")
+        sendResponse({farewell: "goodbye"});
+    });
 });

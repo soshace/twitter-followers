@@ -1,8 +1,9 @@
 $(function () {
   $('.js-follow').on('click', function () {
-      console.log('Start action sent 0');
-    chrome.extension.sendRequest({action: 'start'}, function (response) {
-      console.log('Start action sent 1');
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
+        console.log(response.farewell);
+      });
     });
   });
 });
