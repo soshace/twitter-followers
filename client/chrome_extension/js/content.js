@@ -13,12 +13,25 @@ $(function () {
         newFollowerBtn = $('.js-follow-btn', newFollower),
         newFollowerId = newFollowerData.userId;
 
-      console.log('Not following user id is ' + newFollowerData + ' ----- ' + newFollowerId);
+
+      chrome.runtime.sendMessage({followId: newFollowerId}, function (response) {
+        if (i < 900) {
+          follow(i);
+        }
+
+
+        console.log(arguments);
+        if (response.status) {
+          return
+        }
+
+        if (response.user && !response.error) {
+          newFollowerBtn.click();
+        }
+      });
+
       scrollPage();
-      if (i == 900) {
-        return;
-      }
-      follow(i);
+
     }, getRandomInt(1000, 10000));
   }
 
@@ -56,9 +69,5 @@ $(function () {
         unFollow();
         sendResponse({farewell: "goodbye"});
       }
-
-      chrome.runtime.sendMessage({greeting: "hello"}, function (response) {
-        console.log(response.farewell);
-      });
     });
 });
