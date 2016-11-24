@@ -5,7 +5,7 @@ $(function () {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  function followAll(i) {
+  function followAll() {
     followTimes++;
 
     if (followTimes > 900) {
@@ -13,7 +13,8 @@ $(function () {
     }
 
     setTimeout(function () {
-      var newFollower = $('.not-following').get(0),
+      var $root = $('.GridTimeline'),
+        newFollower = $('.not-following', $root).get(0),
         newFollowerData = $(newFollower).data(),
         newFollowerId = newFollowerData.userId;
 
@@ -49,8 +50,11 @@ $(function () {
     }
 
     if (data.user && !data.error) {
-      debugger;
-      newFollowerBtn.click();
+      var twitterId = data.user.twitterId,
+        $user = $('.not-following[data-user-id="' + twitterId + '"]'),
+        $userBtn = $('.js-follow-btn', $user);
+
+      $userBtn.click();
     }
   }
 
@@ -66,7 +70,6 @@ $(function () {
       "from a content script:" + sender.tab.url :
         "from the extension");
 
-      debugger;
       if (request.follow) {
         followAll();
         sendResponse({farewell: 'Follow all method started!'});
