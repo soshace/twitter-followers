@@ -1,17 +1,13 @@
 $(function () {
   $('.js-follow').on('click', function () {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {follow: true}, function (response) {
-        console.log(response.farewell);
-      });
+      chrome.tabs.sendMessage(tabs[0].id, {follow: true});
     });
   });
 
   $('.js-unfollow').on('click', function () {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {unfollow: true}, function (response) {
-        console.log(response.farewell);
-      });
+      chrome.tabs.sendMessage(tabs[0].id, {unfollow: true});
     });
   });
 
@@ -25,7 +21,9 @@ $(function () {
       if (request.followId) {
 
         $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + request.followId, function (data) {
-          sendResponse(data);
+          chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {followData: data});
+          });
         });
       }
     });

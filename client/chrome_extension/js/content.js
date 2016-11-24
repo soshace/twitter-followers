@@ -1,41 +1,29 @@
 $(function () {
-  console.log('Content of chrome extension was started!');
+  var followTimes = 0;
 
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  function follow(i) {
-    i++;
+  function followAll(i) {
+    followTimes++;
+
+    if (followTimes > 900) {
+      return;
+    }
+
     setTimeout(function () {
       var newFollower = $('.not-following').get(0),
         newFollowerData = $(newFollower).data(),
-        newFollowerBtn = $('.js-follow-btn', newFollower),
         newFollowerId = newFollowerData.userId;
 
-
-      chrome.runtime.sendMessage({followId: newFollowerId}, function (response) {
-        if (i < 900) {
-          follow(i);
-        }
-
-
-        console.log(arguments);
-        if (response.status) {
-          return
-        }
-
-        if (response.user && !response.error) {
-          newFollowerBtn.click();
-        }
-      });
-
+      chrome.runtime.sendMessage({followId: newFollowerId});
       scrollPage();
 
     }, getRandomInt(1000, 10000));
   }
 
-  function unFollow(i) {
+  function unFollowAll(i) {
     i++;
     setTimeout(function () {
       console.log('UnFollow process was started!');
@@ -44,8 +32,26 @@ $(function () {
       if (i == 900) {
         return;
       }
-      follow(i);
+      followAll(i);
     }, getRandomInt(1000, 10000));
+  }
+
+
+  function checkAndFollow(data) {
+    followAll();
+
+    if (!data) {
+      return
+    }
+
+    if (data.status) {
+      return
+    }
+
+    if (data.user && !data.error) {
+      debugger;
+      newFollowerBtn.click();
+    }
   }
 
   function scrollPage() {
@@ -60,14 +66,19 @@ $(function () {
       "from a content script:" + sender.tab.url :
         "from the extension");
 
+      debugger;
       if (request.follow) {
-        follow();
-        sendResponse({farewell: "goodbye"});
+        followAll();
+        sendResponse({farewell: 'Follow all method started!'});
       }
 
       if (request.unfollow) {
-        unFollow();
-        sendResponse({farewell: "goodbye"});
+        unFollowAll();
+        sendResponse({farewell: 'UnFollow all method started!'});
+      }
+
+      if (request.followData) {
+        checkAndFollow(request.followData);
       }
     });
 });
