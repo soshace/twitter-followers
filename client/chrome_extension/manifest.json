@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Twitter famous account",
     "description": "This extension makes your twitter page more popular",
-    "version": "0.0",
+    "version": "0.1",
     "icons": {
         "16": "images/twitter-16.png",
         "128": "images/twitter-128.png",
@@ -28,5 +28,9 @@
             ],
             "run_at": "document_end"
         }
-    ]
+    ],
+    "background": {
+        "scripts": ["js/eventPage.js"],
+        "persistent": false
+    }
 }
