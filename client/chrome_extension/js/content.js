@@ -16,10 +16,11 @@ $(function () {
       var $root = $('.GridTimeline'),
         newFollower = $('.not-following', $root).get(0),
         newFollowerData = $(newFollower).data(),
-        newFollowerId = newFollowerData.userId,
-        backgroundPage = chrome.runtime.getBackgroundPage();
+        newFollowerId = newFollowerData.userId;
 
-      backgroundPage.sendFollowId(newFollowerId);
+      chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
+        console.log(response.farewell);
+      });
       scrollPage();
 
     }, getRandomInt(1000, 10000));

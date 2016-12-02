@@ -30,7 +30,11 @@
         }
     ],
     "background": {
-        "scripts": ["js/eventPage.js"],
+        "scripts": [
+            "js/jquery.js",
+            "js/config.js",
+            "js/eventPage.js"
+        ],
         "persistent": false
     }
 }
