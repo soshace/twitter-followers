@@ -1,16 +1,22 @@
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
+    var twitterTabId;
+
     console.log(sender.tab ?
     "from a content script:" + sender.tab.url :
       "from the extension");
-    if (request.greeting == "hello") {
-      sendResponse({farewell: "goodbye"});
 
 
-      $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + request.followId || 1, function (data) {
-        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-          debugger;
-          chrome.tabs.sendMessage(tabs[0].id, {followData: data});
+    sendResponse({farewell: "goodbye"});
+
+    if (request.followId) {
+      twitterTabId = request.twitterTabId;
+
+      $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + request.followId, function (data) {
+        debugger;
+        chrome.tabs.sendMessage(twitterTabId, {
+            twitterTabId: twitterTabId,
+            followData: data
         });
       });
     }

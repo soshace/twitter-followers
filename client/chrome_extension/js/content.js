@@ -5,7 +5,7 @@ $(function () {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  function followAll() {
+  function followAll(twitterTabId) {
     followTimes++;
 
     if (followTimes > 900) {
@@ -18,30 +18,33 @@ $(function () {
         newFollowerData = $(newFollower).data(),
         newFollowerId = newFollowerData.userId;
 
-      chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
-        console.log(response.farewell);
+      chrome.runtime.sendMessage({
+        twitterTabId: twitterTabId,
+        followId: newFollowerId
+      }, function (response) {
+        console.log(response);
       });
       scrollPage();
 
     }, getRandomInt(1000, 10000));
   }
 
-  function unFollowAll(i) {
-    i++;
-    setTimeout(function () {
-      console.log('UnFollow process was started!');
-      //$('.following .js-follow-btn').get(0).click();
-      //scrollPage();
-      if (i == 900) {
-        return;
-      }
-      followAll(i);
-    }, getRandomInt(1000, 10000));
-  }
+  //function unFollowAll(i) {
+  //  i++;
+  //  setTimeout(function () {
+  //    console.log('UnFollow process was started!');
+  //    //$('.following .js-follow-btn').get(0).click();
+  //    //scrollPage();
+  //    if (i == 900) {
+  //      return;
+  //    }
+  //    followAll(i);
+  //  }, getRandomInt(1000, 10000));
+  //}
 
 
-  function checkAndFollow(data) {
-    followAll();
+  function checkAndFollow(twitterId, data) {
+    followAll(twitterId);
 
     if (!data) {
       return
@@ -73,7 +76,7 @@ $(function () {
         "from the extension");
 
       if (request.follow) {
-        followAll();
+        followAll(request.twitterTabId);
         sendResponse({farewell: 'Follow all method started!'});
       }
 
@@ -83,7 +86,10 @@ $(function () {
       }
 
       if (request.followData) {
-        checkAndFollow(request.followData);
+        var data = request.followData,
+          twitterId = request.twitterId;
+
+        checkAndFollow(twitterId, data);
       }
     });
 });
