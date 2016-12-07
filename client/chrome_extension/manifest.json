@@ -22,7 +22,7 @@
                 "*://twitter.com/*"
             ],
             "js": [
-                "js/jquery.js",
+                "js/libs/jquery.js",
                 "js/config.js",
                 "js/content.js"
             ],
@@ -31,7 +31,8 @@
     ],
     "background": {
         "scripts": [
-            "js/jquery.js",
+            "js/libs/jquery.js",
+            "js/libs/underscore.js",
             "js/config.js",
             "js/eventPage.js"
         ],

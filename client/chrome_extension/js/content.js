@@ -1,18 +1,10 @@
 $(function () {
-  //need to save at another place, content script might be refreshed!
-  var followTimes = 0;
-
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  function followAll(twitterTabId) {
-    followTimes++;
-
-    if (followTimes > 900) {
-      return;
-    }
-
+  function followAll
+  (twitterTabId) {
     setTimeout(function () {
       var $root = $('.GridTimeline'),
         newFollower = $('.not-following', $root).get(0),
@@ -80,6 +72,10 @@ $(function () {
 
       if (request.unfollow) {
         return unFollowAll();
+      }
+
+      if (request.exception) {
+        return console.log('Exception: ' + request.exception);
       }
 
       if (request.followData) {

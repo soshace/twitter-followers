@@ -1,17 +1,42 @@
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    var twitterTabId;
+(function () {
 
-    sendResponse({farewell: "goodbye"});
+  var followList = [];
 
-    if (request.followId) {
-      twitterTabId = request.twitterTabId;
+  /**
+   * Function returns link to the list of current tab with specific url
+   * @param tabId
+   * @param url
+   */
+  function getCurrentList(tabId, url){
+    return _.find(followList, function(item){
+      return
+    })
+  }
 
-      $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + request.followId, function (data) {
-        chrome.tabs.sendMessage(twitterTabId, {
-          twitterTabId: twitterTabId,
-          followData: data
+  function checkUsers(followId) {
+
+  }
+
+  chrome.runtime.onMessage.addListener(
+    function (request) {
+      var followId = request.followId;
+
+      if (followId) {
+        var exception = checkUsers(followId),
+        twitterTabId = request.twitterTabId;
+
+        if(exception){
+          return chrome.tabs.sendMessage(twitterTabId, {
+            exception: exception
+          });
+        }
+
+        $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + followId, function (data) {
+          chrome.tabs.sendMessage(twitterTabId, {
+            twitterTabId: twitterTabId,
+            followData: data
+          });
         });
-      });
-    }
-  });
+      }
+    });
+})();
