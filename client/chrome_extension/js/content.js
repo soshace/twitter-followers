@@ -1,4 +1,5 @@
 $(function () {
+  //need to save at another place, content script might be refreshed!
   var followTimes = 0;
 
   function getRandomInt(min, max) {
@@ -21,8 +22,6 @@ $(function () {
       chrome.runtime.sendMessage({
         twitterTabId: twitterTabId,
         followId: newFollowerId
-      }, function (response) {
-        console.log(response);
       });
       scrollPage();
 
@@ -43,18 +42,22 @@ $(function () {
   //}
 
 
-  function checkAndFollow(twitterId, data) {
-    followAll(twitterId);
+  function checkAndFollow(twitterTabId, data) {
+    followAll(twitterTabId);
 
     if (!data) {
       return
     }
 
     if (data.status) {
-      return
+      return console.log('User status: ' + data.status);
     }
 
-    if (data.user && !data.error) {
+    if (data.error) {
+      return console.log('Server error: ' + data.error);
+    }
+
+    if (data.user) {
       var twitterId = data.user.twitterId,
         $user = $('.not-following[data-user-id="' + twitterId + '"]'),
         $userBtn = $('.js-follow-btn', $user);
@@ -70,26 +73,20 @@ $(function () {
   }
 
   chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-      console.log(sender.tab ?
-      "from a content script:" + sender.tab.url :
-        "from the extension");
-
+    function (request) {
       if (request.follow) {
-        followAll(request.twitterTabId);
-        sendResponse({farewell: 'Follow all method started!'});
+        return followAll(request.twitterTabId);
       }
 
       if (request.unfollow) {
-        unFollowAll();
-        sendResponse({farewell: 'UnFollow all method started!'});
+        return unFollowAll();
       }
 
       if (request.followData) {
         var data = request.followData,
-          twitterId = request.twitterId;
+          twitterTabId = request.twitterTabId;
 
-        checkAndFollow(twitterId, data);
+        checkAndFollow(twitterTabId, data);
       }
     });
 });

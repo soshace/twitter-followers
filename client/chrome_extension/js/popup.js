@@ -4,7 +4,7 @@ $(function () {
       var twitterTabId = tabs[0].id;
 
       console.log('Follow button clicked!');
-      chrome.tabs.sendMessage(tabs[0].id, {
+      chrome.tabs.sendMessage(twitterTabId, {
         follow: true,
         twitterTabId: twitterTabId
       });
