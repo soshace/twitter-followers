@@ -1,23 +1,81 @@
 $(function () {
+  var listFollowersIndexes,
+    lastCheckedFollowerIndex;
+
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  function followAll
-  (twitterTabId) {
+  function init() {
+    listFollowersIndexes = [];
+    listenScrolling();
+  }
+
+  function collectFollowersIndexes() {
+    var followers = $('.js-stream-item');
+
+    listFollowersIndexes = [];
+    followers.each(function (index, item) {
+
+      listFollowersIndexes.push(item.data('itemId'));
+    });
+  }
+
+  function listenScrolling() {
+
+    $(window).scroll(function () {
+      if ($('.js-stream-item').length > listFollowersIndexes.length) {
+        collectFollowersIndexes();
+      }
+    });
+  }
+
+  function follow(tabId, previousFollowerId) {
     setTimeout(function () {
-      var $root = $('.GridTimeline'),
+      var $root = $('.GridTimeline-items'),
         newFollower = $('.not-following', $root).get(0),
-        newFollowerData = $(newFollower).data(),
-        newFollowerId = newFollowerData.userId;
+        newFollowerData,
+        newFollowerId;
+
+
+      if (previousFollowerId) {
+        newFollower = $('.not-following[data-user-id="' + previousFollowerId + '"]', $root).next('.not-following');
+      } else {
+        newFollower = $('.not-following', $root).get(0)
+      }
+
+      newFollowerData = $(newFollower).data();
+      newFollowerId = newFollowerData.userId;
 
       chrome.runtime.sendMessage({
-        twitterTabId: twitterTabId,
+        tabId: tabId,
         followId: newFollowerId
       });
-      scrollPage();
-
     }, getRandomInt(1000, 10000));
+  }
+
+
+  function followAll() {
+    if (checkMistakes()) {
+      return;
+    }
+
+    collectFollowersIndexes();
+    scrollPage();
+  }
+
+
+  function checkMistakes() {
+    if (!/\/followers/.test(location.href)) {
+      alert('This is not follower\'s page');
+      return true;
+    }
+    if ($('.js-stream-item').length === 0) {
+      alert('This page doesn\'t contains ny followers!');
+      return true;
+    }
+
+    return false;
   }
 
   //function unFollowAll(i) {
@@ -35,7 +93,7 @@ $(function () {
 
 
   function checkAndFollow(twitterTabId, data) {
-    followAll(twitterTabId);
+    follow(twitterTabId);
 
     if (!data) {
       return
@@ -59,9 +117,19 @@ $(function () {
   }
 
   function scrollPage() {
-    if ($(window).scrollTop() + $(window).height() !== $(document).height()) {
-      window.scrollTo(0, document.body.scrollHeight);
-    }
+    var scrollIndex = setInterval(function () {
+      var documentHeight = $(document).height(),
+        windowScrollHeight = $(window).scrollTop() + $(window).height();
+
+      console.log('documentHeight ' + documentHeight);
+      console.log('windowScrollHeight ' + windowScrollHeight);
+
+      if (windowScrollHeight !== documentHeight) {
+        return window.scrollTo(0, document.body.scrollHeight);
+      }
+
+      clearInterval(scrollIndex);
+    }, getRandomInt(500, 2000));
   }
 
   chrome.runtime.onMessage.addListener(
@@ -78,11 +146,14 @@ $(function () {
         return console.log('Exception: ' + request.exception);
       }
 
-      if (request.followData) {
-        var data = request.followData,
-          twitterTabId = request.twitterTabId;
-
-        checkAndFollow(twitterTabId, data);
-      }
+      //if (request.followData) {
+      //  var data = request.followData,
+      //    twitterTabId = request.twitterTabId;
+      //
+      //  checkAndFollow(twitterTabId, data);
+      //}
     });
+
+
+  init();
 });

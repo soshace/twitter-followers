@@ -23,17 +23,17 @@
 
       if (followId) {
         var exception = checkUsers(followId),
-        twitterTabId = request.twitterTabId;
+          tabId = request.tabId;
 
         if(exception){
-          return chrome.tabs.sendMessage(twitterTabId, {
+          return chrome.tabs.sendMessage(tabId, {
             exception: exception
           });
         }
 
         $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + followId, function (data) {
-          chrome.tabs.sendMessage(twitterTabId, {
-            twitterTabId: twitterTabId,
+          chrome.tabs.sendMessage(tabId, {
+            tabId: tabId,
             followData: data
           });
         });
