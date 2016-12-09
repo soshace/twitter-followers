@@ -1,5 +1,6 @@
 $(function () {
   var listFollowersIndexes,
+    followAllSwithcher = false,
     lastCheckedFollowerIndex;
 
   function getRandomInt(min, max) {
@@ -8,7 +9,6 @@ $(function () {
 
   function init() {
     listFollowersIndexes = [];
-    listenScrolling();
   }
 
   function collectFollowersIndexes() {
@@ -16,18 +16,21 @@ $(function () {
 
     listFollowersIndexes = [];
     followers.each(function (index, item) {
-
-      listFollowersIndexes.push(item.data('itemId'));
+      listFollowersIndexes.push($(item).data('itemId'));
     });
+
+    console.log('Collection of indexes  ' + listFollowersIndexes);
   }
 
   function listenScrolling() {
+    var scrollHandler = function () {
+        if ($('.js-stream-item').length > listFollowersIndexes.length) {
+          collectFollowersIndexes();
+        }
+      },
+      lazyScrollHandler = _.debounce(scrollHandler, 500);
 
-    $(window).scroll(function () {
-      if ($('.js-stream-item').length > listFollowersIndexes.length) {
-        collectFollowersIndexes();
-      }
-    });
+    $(window).scroll(lazyScrollHandler);
   }
 
   function follow(tabId, previousFollowerId) {
@@ -56,10 +59,19 @@ $(function () {
 
 
   function followAll() {
-    if (checkMistakes()) {
-      return;
+    var mistakeMessage;
+
+    if (followAllSwithcher) {
+      return alert('Already started!')
     }
 
+    mistakeMessage = checkMistakes();
+    if (mistakeMessage) {
+      return alert(mistakeMessage);
+    }
+
+    followAllSwithcher = true;
+    listenScrolling();
     collectFollowersIndexes();
     scrollPage();
   }
@@ -67,12 +79,10 @@ $(function () {
 
   function checkMistakes() {
     if (!/\/followers/.test(location.href)) {
-      alert('This is not follower\'s page');
-      return true;
+      return 'This is not follower\'s page';
     }
     if ($('.js-stream-item').length === 0) {
-      alert('This page doesn\'t contains ny followers!');
-      return true;
+      return 'This page doesn\'t contains ny followers!';
     }
 
     return false;
@@ -116,15 +126,14 @@ $(function () {
     }
   }
 
+  function checkEndOfThePage() {
+    return document.documentElement.clientHeight +
+      $(document).scrollTop() >= document.body.offsetHeight;
+  }
+
   function scrollPage() {
     var scrollIndex = setInterval(function () {
-      var documentHeight = $(document).height(),
-        windowScrollHeight = $(window).scrollTop() + $(window).height();
-
-      console.log('documentHeight ' + documentHeight);
-      console.log('windowScrollHeight ' + windowScrollHeight);
-
-      if (windowScrollHeight !== documentHeight) {
+      if (checkEndOfThePage()) {
         return window.scrollTo(0, document.body.scrollHeight);
       }
 

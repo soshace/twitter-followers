@@ -23,6 +23,7 @@
             ],
             "js": [
                 "js/libs/jquery.js",
+                "js/libs/underscore.js",
                 "js/config.js",
                 "js/content.js"
             ],
