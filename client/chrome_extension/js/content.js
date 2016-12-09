@@ -1,6 +1,9 @@
 $(function () {
   var listFollowersIndexes,
     followAllSwithcher = false,
+    listenScrollingStarted = false,
+    scrollingStarted = false,
+    scrollPageIndex,
     lastCheckedFollowerIndex;
 
   function getRandomInt(min, max) {
@@ -23,6 +26,11 @@ $(function () {
   }
 
   function listenScrolling() {
+    if (listenScrollingStarted) {
+      return;
+    }
+
+    listenScrollingStarted = true;
     var scrollHandler = function () {
         if ($('.js-stream-item').length > listFollowersIndexes.length) {
           collectFollowersIndexes();
@@ -73,7 +81,6 @@ $(function () {
     followAllSwithcher = true;
     listenScrolling();
     collectFollowersIndexes();
-    scrollPage();
   }
 
 
@@ -132,12 +139,17 @@ $(function () {
   }
 
   function scrollPage() {
-    var scrollIndex = setInterval(function () {
+    if (scrollingStarted) {
+      return alert('Scrolling was already started!');
+    }
+
+    listenScrolling();
+    scrollPageIndex = setInterval(function () {
       if (checkEndOfThePage()) {
         return window.scrollTo(0, document.body.scrollHeight);
       }
 
-      clearInterval(scrollIndex);
+      clearInterval(scrollPageIndex);
     }, getRandomInt(500, 2000));
   }
 
@@ -145,6 +157,10 @@ $(function () {
     function (request) {
       if (request.follow) {
         return followAll(request.twitterTabId);
+      }
+
+      if (request.scrollStart) {
+        return scrollPage();
       }
 
       if (request.unfollow) {

@@ -8,8 +8,24 @@
 <body>
 
 <div class="folllow-block">
-    <button class="follow-btn js-follow">Follow all</button>
-    <button class="follow-btn js-unfollow">Unfollow all</button>
+    <form>
+        <fieldset>
+            <legend>Follow</legend>
+            <button class="follow-btn js-follow">Follow all</button>
+            <button class="follow-btn js-follow-stop">Stop following</button>
+        </fieldset>
+        <fieldset>
+            <legend>Follow</legend>
+            <button class="follow-btn js-unfollow">Unfollow all</button>
+            <button class="follow-btn js-unfollow-stop">Stop unfollowing</button>
+        </fieldset>
+        <fieldset>
+            <legend>Scrolling</legend>
+            <button class="follow-btn js-scroll-page">Auto scrolling</button>
+            <button class="follow-btn js-scroll-page-stop">Stop auto scrolling</button>
+        </fieldset>
+    </form>
+
 </div>
 <script type="text/javascript" src="js/libs/jquery.js"></script>
 <script type="text/javascript" src="js/config.js"></script>
