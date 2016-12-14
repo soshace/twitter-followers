@@ -4,7 +4,8 @@ $(function () {
     listenScrollingStarted = false,
     scrollingStarted = false,
     scrollPageIndex,
-    lastCheckedFollowerIndex;
+    lastCheckedFollowerIndex,
+    lazyScrollHandler = _.debounce(scrollHandler, 500);
 
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -25,20 +26,28 @@ $(function () {
     console.log('Collection of indexes  ' + listFollowersIndexes);
   }
 
+  function scrollHandler() {
+    if ($('.js-stream-item').length > listFollowersIndexes.length) {
+      collectFollowersIndexes();
+    }
+  }
+
   function listenScrolling() {
     if (listenScrollingStarted) {
-      return;
+      return alert('Scroll listening is already started!');
     }
 
     listenScrollingStarted = true;
-    var scrollHandler = function () {
-        if ($('.js-stream-item').length > listFollowersIndexes.length) {
-          collectFollowersIndexes();
-        }
-      },
-      lazyScrollHandler = _.debounce(scrollHandler, 500);
-
     $(window).scroll(lazyScrollHandler);
+  }
+
+  function stopListenScrolling() {
+    if (!listenScrollingStarted) {
+      return alert('Scroll listening is already started!');
+    }
+
+    listenScrollingStarted = false;
+    $(window).off("scroll", lazyScrollHandler);
   }
 
   function follow(tabId, previousFollowerId) {
@@ -143,6 +152,8 @@ $(function () {
       return alert('Scrolling was already started!');
     }
 
+    scrollingStarted = true;
+
     listenScrolling();
     scrollPageIndex = setInterval(function () {
       if (checkEndOfThePage()) {
@@ -153,6 +164,17 @@ $(function () {
     }, getRandomInt(500, 2000));
   }
 
+  function stopScrollPage() {
+    if (!scrollingStarted) {
+      return alert('Scrolling was already stopped!');
+    }
+
+    scrollingStarted = false;
+
+    stopListenScrolling();
+    clearInterval(scrollPageIndex);
+  }
+
   chrome.runtime.onMessage.addListener(
     function (request) {
       if (request.follow) {
@@ -161,6 +183,10 @@ $(function () {
 
       if (request.scrollStart) {
         return scrollPage();
+      }
+
+      if (request.scrollStop) {
+        return stopScrollPage();
       }
 
       if (request.unfollow) {

@@ -33,11 +33,12 @@ $(function () {
   });
 
   scrollBtn.on('click', function () {
-    scrollBtn.attr("disabled", false);
+    scrollBtn.attr("disabled", true);
+    stopScrollBtn.attr("disabled", false);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       var twitterTabId = tabs[0].id;
 
-      console.log('Follow stop button clicked!');
+      console.log('Start auto scrolling button clicked!');
       chrome.tabs.sendMessage(twitterTabId, {
         scrollStart: true,
         twitterTabId: twitterTabId
@@ -47,10 +48,11 @@ $(function () {
 
   stopScrollBtn.on('click', function () {
     scrollBtn.attr("disabled", false);
+    stopScrollBtn.attr("disabled", true);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       var twitterTabId = tabs[0].id;
 
-      console.log('Follow stop button clicked!');
+      console.log('Stop auto scrolling button clicked!');
       chrome.tabs.sendMessage(twitterTabId, {
         scrollStop: true,
         twitterTabId: twitterTabId
