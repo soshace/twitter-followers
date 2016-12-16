@@ -1,14 +1,14 @@
 (function () {
-
-  var followList = [];
+  var followList = [],
+    globalScrolling = [];
 
   /**
    * Function returns link to the list of current tab with specific url
    * @param tabId
    * @param url
    */
-  function getCurrentList(tabId, url){
-    return _.find(followList, function(item){
+  function getCurrentList(tabId, url) {
+    return _.find(followList, function (item) {
       return
     })
   }
@@ -19,13 +19,17 @@
 
   chrome.runtime.onMessage.addListener(
     function (request) {
-      var followId = request.followId;
+      debugger;
+      var followId = request.followId,
+        scrolling = request.scrolling,
+        getScrolling = request.getScrolling,
+        scrollingData;
 
       if (followId) {
         var exception = checkUsers(followId),
           tabId = request.tabId;
 
-        if(exception){
+        if (exception) {
           return chrome.tabs.sendMessage(tabId, {
             exception: exception
           });
@@ -37,6 +41,22 @@
             followData: data
           });
         });
+
+        return;
+      }
+
+      if (scrolling) {
+        globalScrolling.push({
+          tabId: tabId,
+          scrolling: scrolling
+        });
+
+        return;
+      }
+
+      if (getScrolling) {
+        scrollingData = _.findWhere(globalScrolling, {tabId: tabId});
+        chrome.runtime.sendMessage(scrollingData);
       }
     });
 })();

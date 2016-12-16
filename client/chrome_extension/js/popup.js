@@ -6,6 +6,22 @@ $(function () {
     scrollBtn = $('.js-scroll-page'),
     stopScrollBtn = $('.js-scroll-page-stop');
 
+  chrome.runtime.sendMessage({getScrolling: true});
+
+  function switchScrollingButtons(switcher) {
+    if (switcher) {
+      scrollBtn.attr("disabled", true);
+      stopScrollBtn.attr("disabled", false);
+      return;
+    }
+
+    if (!switcher) {
+      scrollBtn.attr("disabled", false);
+      stopScrollBtn.attr("disabled", true);
+    }
+  }
+
+
   followBtn.on('click', function () {
     followBtn.attr("disabled", true);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
@@ -33,8 +49,8 @@ $(function () {
   });
 
   scrollBtn.on('click', function () {
-    scrollBtn.attr("disabled", true);
-    stopScrollBtn.attr("disabled", false);
+    switchScrollingButtons(true);
+
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       var twitterTabId = tabs[0].id;
 
@@ -43,18 +59,29 @@ $(function () {
         scrollStart: true,
         twitterTabId: twitterTabId
       });
+
+      chrome.runtime.sendMessage({
+        scrolling: true,
+        twitterTabId: twitterTabId
+      });
     });
   });
 
   stopScrollBtn.on('click', function () {
-    scrollBtn.attr("disabled", false);
-    stopScrollBtn.attr("disabled", true);
+    switchScrollingButtons(false);
+
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       var twitterTabId = tabs[0].id;
 
       console.log('Stop auto scrolling button clicked!');
       chrome.tabs.sendMessage(twitterTabId, {
         scrollStop: true,
+        twitterTabId: twitterTabId
+      });
+
+
+      chrome.runtime.sendMessage({
+        scrolling: false,
         twitterTabId: twitterTabId
       });
     });
@@ -64,5 +91,12 @@ $(function () {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {unfollow: true});
     });
+  });
+
+
+  chrome.runtime.onMessage.addListener(function (request) {
+    if (request.scrolling) {
+      debugger;
+    }
   });
 });
