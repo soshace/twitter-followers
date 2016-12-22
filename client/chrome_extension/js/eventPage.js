@@ -19,15 +19,14 @@
 
   chrome.runtime.onMessage.addListener(
     function (request) {
-      debugger;
       var followId = request.followId,
         scrolling = request.scrolling,
         getScrolling = request.getScrolling,
+        tabId = request.tabId,
         scrollingData;
 
       if (followId) {
-        var exception = checkUsers(followId),
-          tabId = request.tabId;
+        var exception = checkUsers(followId);
 
         if (exception) {
           return chrome.tabs.sendMessage(tabId, {
@@ -45,7 +44,7 @@
         return;
       }
 
-      if (scrolling) {
+      if (typeof scrolling !== 'undefined') {
         globalScrolling.push({
           tabId: tabId,
           scrolling: scrolling
@@ -56,6 +55,15 @@
 
       if (getScrolling) {
         scrollingData = _.findWhere(globalScrolling, {tabId: tabId});
+
+        if (typeof scrollingData === 'undefined') {
+          scrollingData = {
+            tabId: tabId,
+            scrolling: false
+          };
+        }
+
+        console.log('scrollingData', scrollingData);
         chrome.runtime.sendMessage(scrollingData);
       }
     });

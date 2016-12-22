@@ -178,7 +178,7 @@ $(function () {
   chrome.runtime.onMessage.addListener(
     function (request) {
       if (request.follow) {
-        return followAll(request.twitterTabId);
+        return followAll(request.tabId);
       }
 
       if (request.scrollStart) {

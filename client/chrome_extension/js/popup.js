@@ -6,7 +6,14 @@ $(function () {
     scrollBtn = $('.js-scroll-page'),
     stopScrollBtn = $('.js-scroll-page-stop');
 
-  chrome.runtime.sendMessage({getScrolling: true});
+  chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+    var tabId = tabs[0].id;
+
+    chrome.runtime.sendMessage({
+      getScrolling: true,
+      tabId: tabId
+    });
+  });
 
   function switchScrollingButtons(switcher) {
     if (switcher) {
@@ -25,12 +32,12 @@ $(function () {
   followBtn.on('click', function () {
     followBtn.attr("disabled", true);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      var twitterTabId = tabs[0].id;
+      var tabId = tabs[0].id;
 
       console.log('Follow button clicked!');
-      chrome.tabs.sendMessage(twitterTabId, {
+      chrome.tabs.sendMessage(tabId, {
         follow: true,
-        twitterTabId: twitterTabId
+        tabId: tabId
       });
     });
   });
@@ -38,12 +45,12 @@ $(function () {
   followBtnStop.on('click', function () {
     followBtn.attr("disabled", false);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      var twitterTabId = tabs[0].id;
+      var tabId = tabs[0].id;
 
       console.log('Follow stop button clicked!');
-      chrome.tabs.sendMessage(twitterTabId, {
+      chrome.tabs.sendMessage(tabId, {
         followStop: true,
-        twitterTabId: twitterTabId
+        tabId: tabId
       });
     });
   });
@@ -52,17 +59,17 @@ $(function () {
     switchScrollingButtons(true);
 
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      var twitterTabId = tabs[0].id;
+      var tabId = tabs[0].id;
 
       console.log('Start auto scrolling button clicked!');
-      chrome.tabs.sendMessage(twitterTabId, {
+      chrome.tabs.sendMessage(tabId, {
         scrollStart: true,
-        twitterTabId: twitterTabId
+        tabId: tabId
       });
 
       chrome.runtime.sendMessage({
         scrolling: true,
-        twitterTabId: twitterTabId
+        tabId: tabId
       });
     });
   });
@@ -71,18 +78,18 @@ $(function () {
     switchScrollingButtons(false);
 
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      var twitterTabId = tabs[0].id;
+      var tabId = tabs[0].id;
 
       console.log('Stop auto scrolling button clicked!');
-      chrome.tabs.sendMessage(twitterTabId, {
+      chrome.tabs.sendMessage(tabId, {
         scrollStop: true,
-        twitterTabId: twitterTabId
+        tabId: tabId
       });
 
 
       chrome.runtime.sendMessage({
         scrolling: false,
-        twitterTabId: twitterTabId
+        tabId: tabId
       });
     });
   });
@@ -95,8 +102,10 @@ $(function () {
 
 
   chrome.runtime.onMessage.addListener(function (request) {
-    if (request.scrolling) {
-      debugger;
+    var scrollingStatus = request.scrolling;
+
+    if (typeof scrollingStatus !== 'undefined') {
+      switchScrollingButtons(scrollingStatus);
     }
   });
 });
