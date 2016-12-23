@@ -1,6 +1,6 @@
 $(function () {
   var listFollowersIndexes,
-    followAllSwithcher = false,
+    followAllSwitcher = false,
     listenScrollingStarted = false,
     scrollingStarted = false,
     scrollPageIndex,
@@ -16,8 +16,13 @@ $(function () {
   }
 
   function collectFollowersIndexes() {
-    var followers = $('.js-stream-item');
+    var followers;
 
+    if (checkMistakes()) {
+      return;
+    }
+
+    followers = $('.js-stream-item');
     listFollowersIndexes = [];
     followers.each(function (index, item) {
       listFollowersIndexes.push($(item).data('itemId'));
@@ -78,7 +83,7 @@ $(function () {
   function followAll() {
     var mistakeMessage;
 
-    if (followAllSwithcher) {
+    if (followAllSwitcher) {
       return alert('Already started!')
     }
 
@@ -87,7 +92,7 @@ $(function () {
       return alert(mistakeMessage);
     }
 
-    followAllSwithcher = true;
+    followAllSwitcher = true;
     listenScrolling();
     collectFollowersIndexes();
   }
@@ -177,11 +182,13 @@ $(function () {
 
   chrome.runtime.onMessage.addListener(
     function (request) {
+      console.log('content script request ', request);
       if (request.follow) {
         return followAll(request.tabId);
       }
 
       if (request.scrollStart) {
+        console.log('scrolling was started!');
         return scrollPage();
       }
 
