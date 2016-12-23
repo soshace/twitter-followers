@@ -18,10 +18,6 @@ $(function () {
   function collectFollowersIndexes() {
     var followers;
 
-    if (checkMistakes()) {
-      return;
-    }
-
     followers = $('.js-stream-item');
     listFollowersIndexes = [];
     followers.each(function (index, item) {
@@ -32,9 +28,11 @@ $(function () {
   }
 
   function scrollHandler() {
-    if ($('.js-stream-item').length > listFollowersIndexes.length) {
-      collectFollowersIndexes();
+    if (checkMistakes()) {
+      return;
     }
+
+    collectFollowersIndexes();
   }
 
   function listenScrolling() {
@@ -183,7 +181,9 @@ $(function () {
   chrome.runtime.onMessage.addListener(
     function (request) {
       console.log('content script request ', request);
+
       if (request.follow) {
+        debugger;
         return followAll(request.tabId);
       }
 
