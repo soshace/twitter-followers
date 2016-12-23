@@ -13,6 +13,16 @@ $(function () {
       getScrolling: true,
       tabId: tabId
     });
+
+    chrome.runtime.sendMessage({
+      getFollow: true,
+      tabId: tabId
+    });
+
+    chrome.runtime.sendMessage({
+      getUnFollow: true,
+      tabId: tabId
+    });
   });
 
   function switchScrollingButtons(switcher) {
@@ -64,6 +74,11 @@ $(function () {
         follow: true,
         tabId: tabId
       });
+
+      chrome.runtime.sendMessage({
+        follow: true,
+        tabId: tabId
+      });
     });
   });
 
@@ -75,6 +90,11 @@ $(function () {
       console.log('Follow stop button clicked!');
       chrome.tabs.sendMessage(tabId, {
         followStop: true,
+        tabId: tabId
+      });
+
+      chrome.runtime.sendMessage({
+        follow: false,
         tabId: tabId
       });
     });
@@ -123,21 +143,41 @@ $(function () {
     switchUnFollowButtons(true);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {unfollow: true});
+
+      chrome.runtime.sendMessage({
+        unfollow: true,
+        tabId: tabId
+      });
     });
   });
 
-  unFollowBtn.on('click', function () {
+  unFollowBtnStop.on('click', function () {
     switchUnFollowButtons(false);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {unfollow: false});
+
+      chrome.runtime.sendMessage({
+        unfollow: false,
+        tabId: tabId
+      });
     });
   });
 
   chrome.runtime.onMessage.addListener(function (request) {
-    var scrollingStatus = request.scrolling;
+    var followStatus = request.follow,
+      unFollowStatus = request.unfollow,
+      scrollingStatus = request.scrolling;
 
     if (typeof scrollingStatus !== 'undefined') {
-      switchScrollingButtons(scrollingStatus);
+      return switchScrollingButtons(scrollingStatus);
+    }
+
+    if (typeof followStatus !== 'undefined') {
+      return switchFollowButtons(followStatus);
+    }
+
+    if (typeof unFollowStatus !== 'undefined') {
+      switchUnFollowButtons(unFollowStatus);
     }
   });
 });
