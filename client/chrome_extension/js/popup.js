@@ -142,7 +142,9 @@ $(function () {
   unFollowBtn.on('click', function () {
     switchUnFollowButtons(true);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {unfollow: true});
+      var tabId = tabs[0].id;
+
+      chrome.tabs.sendMessage(tabId, {unfollow: true});
 
       chrome.runtime.sendMessage({
         unfollow: true,
@@ -154,7 +156,9 @@ $(function () {
   unFollowBtnStop.on('click', function () {
     switchUnFollowButtons(false);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {unfollow: false});
+      var tabId = tabs[0].id;
+
+      chrome.tabs.sendMessage(tabId, {unfollow: false});
 
       chrome.runtime.sendMessage({
         unfollow: false,
@@ -165,7 +169,7 @@ $(function () {
 
   chrome.runtime.onMessage.addListener(function (request) {
     var followStatus = request.follow,
-      unFollowStatus = request.unfollow,
+      unFollowStatus = request.unFollow,
       scrollingStatus = request.scrolling;
 
     if (typeof scrollingStatus !== 'undefined') {

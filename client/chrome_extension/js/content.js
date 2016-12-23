@@ -95,6 +95,9 @@ $(function () {
     collectFollowersIndexes();
   }
 
+  function unFollowAll() {
+
+  }
 
   function checkMistakes() {
     if (!/\/followers/.test(location.href)) {
