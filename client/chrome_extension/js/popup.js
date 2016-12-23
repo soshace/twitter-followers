@@ -55,7 +55,7 @@ $(function () {
   }
 
   followBtn.on('click', function () {
-    followBtn.attr("disabled", true);
+    switchFollowButtons(true);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       var tabId = tabs[0].id;
 
@@ -68,7 +68,7 @@ $(function () {
   });
 
   followBtnStop.on('click', function () {
-    followBtn.attr("disabled", false);
+    switchFollowButtons(false);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       var tabId = tabs[0].id;
 
@@ -119,12 +119,19 @@ $(function () {
     });
   });
 
-  $('.js-unfollow').on('click', function () {
+  unFollowBtn.on('click', function () {
+    switchUnFollowButtons(true);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {unfollow: true});
     });
   });
 
+  unFollowBtn.on('click', function () {
+    switchUnFollowButtons(false);
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {unfollow: false});
+    });
+  });
 
   chrome.runtime.onMessage.addListener(function (request) {
     var scrollingStatus = request.scrolling;
