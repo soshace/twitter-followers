@@ -1,8 +1,8 @@
 $(function () {
   var followBtn = $('.js-follow'),
     followBtnStop = $('.js-follow-stop'),
-    unFollowBtn,
-    unFollowBtnStop,
+    unFollowBtn = $('.js-unfollow'),
+    unFollowBtnStop = $('.js-unfollow-stop'),
     scrollBtn = $('.js-scroll-page'),
     stopScrollBtn = $('.js-scroll-page-stop');
 
@@ -28,6 +28,31 @@ $(function () {
     }
   }
 
+  function switchFollowButtons(switcher) {
+    if (switcher) {
+      followBtn.attr("disabled", true);
+      followBtnStop.attr("disabled", false);
+      return;
+    }
+
+    if (!switcher) {
+      followBtn.attr("disabled", false);
+      followBtnStop.attr("disabled", true);
+    }
+  }
+
+  function switchUnFollowButtons(switcher) {
+    if (switcher) {
+      unFollowBtn.attr("disabled", true);
+      unFollowBtnStop.attr("disabled", false);
+      return;
+    }
+
+    if (!switcher) {
+      unFollowBtn.attr("disabled", false);
+      unFollowBtnStop.attr("disabled", true);
+    }
+  }
 
   followBtn.on('click', function () {
     followBtn.attr("disabled", true);
