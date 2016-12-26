@@ -58,7 +58,6 @@
   }
 
   function updateUnFollowBtnData(followStatus, tabId) {
-    debugger;
     var unFollowBtnData = _.findWhere(globalUnFollowBtnData, {tabId: tabId});
 
     if (typeof unFollowBtnData === 'undefined') {
@@ -73,7 +72,6 @@
   }
 
   function getUnFollowBtnData(tabId) {
-    debugger;
     var unFollowBtnData = _.findWhere(globalUnFollowBtnData, {tabId: tabId});
 
     if (typeof unFollowBtnData === 'undefined') {
@@ -127,7 +125,6 @@
       }
 
       if (getUnFollow) {
-        debugger;
         return chrome.runtime.sendMessage(getUnFollowBtnData(tabId));
       }
     });
