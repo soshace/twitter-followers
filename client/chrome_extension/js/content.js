@@ -26,6 +26,7 @@ $(function () {
     });
 
     chrome.runtime.sendMessage({
+      target: 'eventPage',
       tabId: tabId,
       followersIndexes: followers
     });
@@ -77,13 +78,14 @@ $(function () {
   }
 
   function unFollowAll() {
-
+    stopListenScrolling();
   }
 
   function checkMistakes() {
     if (!/\/followers/.test(location.href)) {
       return 'This is not follower\'s page';
     }
+
     if ($('.js-stream-item').length === 0) {
       return 'This page doesn\'t contains any followers!';
     }
@@ -124,6 +126,10 @@ $(function () {
   chrome.runtime.onMessage.addListener(
     function (request) {
       console.log('content script request ', request);
+
+      if (request.target !== 'content') {
+        return;
+      }
 
       tabId = request.tabId;
 

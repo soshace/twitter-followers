@@ -22,11 +22,13 @@
 
     if (typeof scrollingData === 'undefined') {
       scrollingData = {
+        target: 'popup',
         tabId: tabId,
         scrolling: false
       };
     }
 
+    scrollingData.target = 'popup';
     return scrollingData;
   }
 
@@ -49,11 +51,13 @@
 
     if (typeof followBtnData === 'undefined') {
       followBtnData = {
+        target: 'popup',
         tabId: tabId,
         follow: false
       };
     }
 
+    followBtnData.target = 'popup';
     return followBtnData;
   }
 
@@ -62,6 +66,7 @@
 
     if (typeof unFollowBtnData === 'undefined') {
       globalUnFollowBtnData.push({
+        target: 'content',
         tabId: tabId,
         unFollow: followStatus
       });
@@ -76,54 +81,72 @@
 
     if (typeof unFollowBtnData === 'undefined') {
       unFollowBtnData = {
+        target: 'popup',
         tabId: tabId,
         unFollow: false
       };
     }
 
+    unFollowBtnData.target = 'popup';
     return unFollowBtnData;
   }
 
   chrome.runtime.onMessage.addListener(
     function (request) {
-      var followId = request.followId,
-        scrolling = request.scrolling,
-        getScrolling = request.getScrolling,
-        follow = request.follow,
-        getFollow = request.getFollow,
-        unFollow = request.unfollow,
-        getUnFollow = request.getUnFollow,
-        tabId = request.tabId;
+      var followId,
+        scrolling,
+        getScrolling,
+        follow,
+        getFollow,
+        unFollow,
+        getUnFollow,
+        tabId;
+
+      if (request.target !== 'eventPage') {
+        return;
+      }
+
+      console.log('Request to eventPage ', request);
+
+      followId = request.followId;
+      tabId = request.tabId;
 
       if (followId) {
         return $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + followId, function (data) {
           chrome.tabs.sendMessage(tabId, {
+            target: 'content',
             tabId: tabId,
             followData: data
           });
         });
       }
 
+      scrolling = request.scrolling;
       if (typeof scrolling !== 'undefined') {
         return updateScrollingData(scrolling, tabId);
       }
 
+      getScrolling = request.getScrolling;
       if (getScrolling) {
         return chrome.runtime.sendMessage(getScrollingData(tabId));
       }
 
+      follow = request.follow;
       if (typeof follow !== 'undefined') {
         return updateFollowBtnData(follow, tabId);
       }
 
+      getFollow = request.getFollow;
       if (getFollow) {
         return chrome.runtime.sendMessage(getFollowBtnData(tabId));
       }
 
+      unFollow = request.unfollow;
       if (typeof unFollow !== 'undefined') {
         return updateUnFollowBtnData(unFollow, tabId);
       }
 
+      getUnFollow = request.getUnFollow;
       if (getUnFollow) {
         return chrome.runtime.sendMessage(getUnFollowBtnData(tabId));
       }

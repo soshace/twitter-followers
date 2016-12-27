@@ -10,16 +10,19 @@ $(function () {
     var tabId = tabs[0].id;
 
     chrome.runtime.sendMessage({
+      target: 'eventPage',
       getScrolling: true,
       tabId: tabId
     });
 
     chrome.runtime.sendMessage({
+      target: 'eventPage',
       getFollow: true,
       tabId: tabId
     });
 
     chrome.runtime.sendMessage({
+      target: 'eventPage',
       getUnFollow: true,
       tabId: tabId
     });
@@ -71,11 +74,13 @@ $(function () {
 
       console.log('Follow button clicked!');
       chrome.tabs.sendMessage(tabId, {
+        target: 'content',
         follow: true,
         tabId: tabId
       });
 
       chrome.runtime.sendMessage({
+        target: 'eventPage',
         follow: true,
         tabId: tabId
       });
@@ -89,11 +94,13 @@ $(function () {
 
       console.log('Follow stop button clicked!');
       chrome.tabs.sendMessage(tabId, {
+        target: 'content',
         followStop: true,
         tabId: tabId
       });
 
       chrome.runtime.sendMessage({
+        target: 'eventPage',
         follow: false,
         tabId: tabId
       });
@@ -108,11 +115,13 @@ $(function () {
 
       console.log('Start auto scrolling button clicked!');
       chrome.tabs.sendMessage(tabId, {
+        target: 'content',
         scrollStart: true,
         tabId: tabId
       });
 
       chrome.runtime.sendMessage({
+        target: 'eventPage',
         scrolling: true,
         tabId: tabId
       });
@@ -127,12 +136,14 @@ $(function () {
 
       console.log('Stop auto scrolling button clicked!');
       chrome.tabs.sendMessage(tabId, {
+        target: 'content',
         scrollStop: true,
         tabId: tabId
       });
 
 
       chrome.runtime.sendMessage({
+        target: 'evenPage',
         scrolling: false,
         tabId: tabId
       });
@@ -147,6 +158,7 @@ $(function () {
       chrome.tabs.sendMessage(tabId, {unfollow: true});
 
       chrome.runtime.sendMessage({
+        target: 'content',
         unfollow: true,
         tabId: tabId
       });
@@ -161,6 +173,7 @@ $(function () {
       chrome.tabs.sendMessage(tabId, {unfollow: false});
 
       chrome.runtime.sendMessage({
+        target: 'content',
         unfollow: false,
         tabId: tabId
       });
@@ -171,6 +184,10 @@ $(function () {
     var followStatus = request.follow,
       unFollowStatus = request.unFollow,
       scrollingStatus = request.scrolling;
+
+    if (request.target !== 'popup') {
+      return;
+    }
 
     if (typeof scrollingStatus !== 'undefined') {
       return switchScrollingButtons(scrollingStatus);
