@@ -1,7 +1,8 @@
 (function () {
   var globalScrolling = [],
     globalFollowBtnData = [],
-    globalUnFollowBtnData = [];
+    globalUnFollowBtnData = [],
+    followersIndexesCollection = [];
 
   function updateScrollingData(scrollingStatus, tabId) {
     var scrollingData = _.findWhere(globalScrolling, {tabId: tabId});
@@ -91,9 +92,33 @@
     return unFollowBtnData;
   }
 
+  function updateFollowerById(tabId, followId) {
+    $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + followId, function (data) {
+      chrome.tabs.sendMessage(tabId, {
+        target: 'content',
+        tabId: tabId,
+        followData: data
+      });
+    });
+  }
+
+  function setFollowersIndexes(tabId, indexes) {
+    var followersIndexes = _.findWhere(followersIndexesCollection, {tabId: tabId});
+
+    if (followersIndexes) {
+      return followersIndexes.indexes = indexes;
+    }
+
+    followersIndexesCollection.push({
+      tabId: tabId,
+      indexes: indexes
+    });
+  }
+
   chrome.runtime.onMessage.addListener(
     function (request) {
       var followId,
+        followersIndexes,
         scrolling,
         getScrolling,
         follow,
@@ -108,17 +133,16 @@
 
       console.log('Request to eventPage ', request);
 
-      followId = request.followId;
       tabId = request.tabId;
 
+      followId = request.followId;
       if (followId) {
-        return $.get('http://' + config.appIp + ':' + config.appPort + '/follow/' + followId, function (data) {
-          chrome.tabs.sendMessage(tabId, {
-            target: 'content',
-            tabId: tabId,
-            followData: data
-          });
-        });
+        return updateFollowerById(tabId, followId);
+      }
+
+      followersIndexes = request.followersIndexes;
+      if (followersIndexes) {
+        return setFollowersIndexes(tabId, followersIndexes);
       }
 
       scrolling = request.scrolling;
