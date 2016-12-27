@@ -64,6 +64,11 @@ $(function () {
     var mistakeMessage;
 
     if (followAllSwitcher) {
+      chrome.runtime.sendMessage({
+        target: 'popup',
+        tabId: tabId,
+        follow: true
+      });
       return alert('Already started!');
     }
 
@@ -100,6 +105,11 @@ $(function () {
 
   function scrollPage() {
     if (scrollingStarted) {
+      chrome.runtime.sendMessage({
+        target: 'popup',
+        tabId: tabId,
+        scrolling: true
+      });
       return alert('Scrolling was already started!');
     }
 
@@ -116,6 +126,11 @@ $(function () {
 
   function stopScrollPage() {
     if (!scrollingStarted) {
+      chrome.runtime.sendMessage({
+        target: 'popup',
+        tabId: tabId,
+        scrolling: false
+      });
       return alert('Scrolling was already stopped!');
     }
 
