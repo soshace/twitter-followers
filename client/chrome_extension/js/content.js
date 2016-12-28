@@ -78,12 +78,26 @@ $(function () {
     }
 
     followAllSwitcher = true;
-    listenScrolling();
     collectFollowersIndexes();
+    listenScrolling();
+  }
+
+  function stopFollowing() {
+    if (!followAllSwitcher) {
+      chrome.runtime.sendMessage({
+        target: 'popup',
+        tabId: tabId,
+        follow: false
+      });
+      return alert('Already stopped!');
+    }
+
+    followAllSwitcher = false;
+    stopListenScrolling();
   }
 
   function unFollowAll() {
-    stopListenScrolling();
+
   }
 
   function checkMistakes() {
@@ -150,6 +164,10 @@ $(function () {
 
       if (request.follow) {
         return followAll();
+      }
+
+      if (request.followStop) {
+        return stopFollowing();
       }
 
       if (request.scrollStart) {
