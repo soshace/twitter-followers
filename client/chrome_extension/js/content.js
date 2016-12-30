@@ -60,6 +60,43 @@ $(function () {
     $(window).off("scroll", lazyScrollHandler);
   }
 
+  function checkNextFollowBtn() {
+    var lastFollowerPosition,
+      nextFollowerIndex;
+
+    if (lastCheckedFollowerIndex) {
+      lastFollowerPosition = _.indexOf(listFollowersIndexes, lastCheckedFollowerIndex);
+      nextFollowerIndex = listFollowersIndexes[lastFollowerPosition + 1];
+    } else {
+      nextFollowerIndex = listFollowersIndexes[0];
+    }
+
+    chrome.runtime.sendMessage({
+      target: 'eventPage',
+      tabId: tabId,
+      followId: nextFollowerIndex
+    });
+  }
+
+  function follow(data) {
+    var jsStreamItem,
+      twitterId,
+      followBtn;
+
+    if (status === 'success') {
+      twitterId = data.twitterId;
+      jsStreamItem = $('.js-stream-item[data-item-id=" + twitterId + "]');
+      followBtn = $('.not-following .js-follow-btn', jsStreamItem);
+      followBtn.click();
+    }
+
+    if (followAllSwitcher) {
+      setTimeout(function () {
+        checkNextFollowBtn();
+      }, getRandomInt(500, 2000));
+    }
+  }
+
   function followAll() {
     var mistakeMessage;
 
@@ -95,6 +132,7 @@ $(function () {
 
     followAllSwitcher = true;
     collectFollowersIndexes();
+    checkNextFollowBtn();
     listenScrolling();
   }
 
@@ -208,12 +246,11 @@ $(function () {
         return console.log('Exception: ' + request.exception);
       }
 
-      //if (request.followData) {
-      //  var data = request.followData,
-      //    twitterTabId = request.twitterTabId;
-      //
-      //  checkAndFollow(twitterTabId, data);
-      //}
+      if (request.followData) {
+        var data = request.followData;
+
+        follow(data);
+      }
     });
 
   init();

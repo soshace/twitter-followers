@@ -91,7 +91,7 @@ app.get('/follow/:useId', function (request, response) {
       }
 
       response.send({
-        error: false,
+        status: 'success',
         user: updatedUser
       });
     });
