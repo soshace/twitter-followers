@@ -67,13 +67,29 @@ $(function () {
       chrome.runtime.sendMessage({
         target: 'popup',
         tabId: tabId,
-        follow: true
+        follow: false
+      });
+      chrome.runtime.sendMessage({
+        target: 'eventPage',
+        tabId: tabId,
+        follow: false
       });
       return alert('Already started!');
     }
 
     mistakeMessage = checkMistakes();
+    console.log('Follow all mistakes ', mistakeMessage);
     if (mistakeMessage) {
+      chrome.runtime.sendMessage({
+        target: 'popup',
+        tabId: tabId,
+        follow: false
+      });
+      chrome.runtime.sendMessage({
+        target: 'eventPage',
+        tabId: tabId,
+        follow: false
+      });
       return alert(mistakeMessage);
     }
 
@@ -121,6 +137,11 @@ $(function () {
     if (scrollingStarted) {
       chrome.runtime.sendMessage({
         target: 'popup',
+        tabId: tabId,
+        scrolling: true
+      });
+      chrome.runtime.sendMessage({
+        target: 'eventPage',
         tabId: tabId,
         scrolling: true
       });

@@ -185,6 +185,7 @@ $(function () {
       unFollowStatus = request.unFollow,
       scrollingStatus = request.scrolling;
 
+    console.log('Popup requests ', request);
     if (request.target !== 'popup') {
       return;
     }
